@@ -18,6 +18,8 @@ def bubble_sort(A:list) -> (list, int):
                 flag = True
                 sw += 1
 
+        i += 1
+
     return A, sw
 
 
