@@ -1,48 +1,28 @@
 # ALDS1_7_A: Rooted Trees
 # https://onlinejudge.u-aizu.ac.jp/problems/ALDS1_7_A
-from functools import lru_cache
 
 
 class Node:
-    def __init__(self, parent: int = None, left: int = None, right: int = None) -> None:
-        self.parent = parent
-        self.left = left
-        self.right = right
-
-        return None
-
-
-@lru_cache(maxsize=1000)
-def get_depth(T: list, D: list, u: int, depth: int) -> (list, list):
-    D[u] = depth
-    if T[u].right is not None:
-        T, D = get_depth(T=T, D=D, u=T[u].right, depth=depth)
-    else:
-        pass
-
-    if T[u].left is not None:
-        T, D = get_depth(T=T, D=D, u=T[u].left, depth=depth + 1)
-    else:
-        pass
-
-    return T, D
+    def __init__(self, node_id: int = None, parent_id: int = -1, depth: int = 0, children_id: list = [],
+                 node_type: str = None) -> None:
+        self.node_id = node_id
+        self.parent_id = parent_id
+        self.depth = depth
+        self.children_id = children_id
+        self.node_type = node_type
 
 
-def get_child(T: list, u: int) -> list:
-    children = []
-    child = T[u].left
-
-    while child is not None:
-        children.append(child)
-        child = T[child].right
-
-    return children
+def get_depth(node_id: int = 0, depth: int = 0) -> None:
+    nodes[node_id].depth = depth
+    for child_id in nodes[node_id].children_id:
+        get_depth(node_id=child_id, depth=depth+1)
+    return None
 
 
-def get_type(depth: int, children: list) -> str:
+def get_type(depth: int, children_num: int) -> str:
     if depth == 0:
         return 'root'
-    elif len(children) > 0:
+    elif children_num > 0:
         return 'internal node'
     else:
         return 'leaf'
@@ -51,41 +31,36 @@ def get_type(depth: int, children: list) -> str:
 def main() -> None:
     n = int(input())
 
-    T = []
-    D = [None] * n
-    C = []
-    types = []
+    global nodes
+    nodes = []
 
-    for _ in range(n):
-        T.append(Node())
+    for node_id in range(n):
+        node = Node(node_id=node_id)
+        nodes.append(node)
 
-    for _ in range(n):
-        info = list(map(int, input().split()))
+    for _ in range(n):  # set children_id
+        val = list(map(int, input().split()))
+        node_id = val[0]
+        children_id = val[2:]
+        nodes[node_id].children_id = children_id
 
-        u = info[0]  # target node number
-        children = info[2:]
+    for node in nodes:  # set parent_id
+        for child_id in node.children_id:
+            nodes[child_id].parent_id = node.node_id
 
-        for c in children:  # children of T[u]
-            if children.index(c) == 0:  # left-most child
-                T[u].left = c
-            else:  # another child
-                T[l].right = c  # brother of left one
-            l = c
-            T[c].parent = u
+    for node in nodes:  # get depth
+        if node.parent_id == -1:  # i.e. root
+            get_depth(node_id=node.node_id, depth=0)
+            break
+        else:
+            pass
 
-    for u in T:
-        if u.parent is None:  # i.e. root
-            r = T.index(u)
-            u.parent = -1
+    for node in nodes:  # get node_type
+        node.node_type = get_type(depth=node.depth, children_num=len(node.children_id))
 
-    T, D = get_depth(T=T, D=D, u=r, depth=0)
-
-    for i in range(n):
-        C.append(get_child(T=T, u=i))
-        types.append(get_type(depth=D[i], children=C[i]))
-
-    for i in range(n):
-        print('node {}: parent = {}, depth = {}, {}, {}'.format(i, T[i].parent, D[i], types[i], C[i]))
+    for node in nodes:
+        print('node {}: parent = {}, depth = {}, {}, {}'.format(node.node_id, node.parent_id, node.depth,
+                                                                node.node_type, node.children_id))
 
     return None
 
