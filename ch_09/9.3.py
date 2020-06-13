@@ -1,5 +1,5 @@
-# ALDS1_8_A: Binary Search Tree I
-# https://onlinejudge.u-aizu.ac.jp/problems/ALDS1_8_A
+# ALDS1_8_B: Binary Search Tree II
+# https://onlinejudge.u-aizu.ac.jp/problems/ALDS1_8_B
 
 
 class Node:
@@ -93,7 +93,7 @@ class BinarySearchTree:
 
 def main() -> None:
     n = int(input())
-    tree = BinarySearchTree()
+    tree = BinaryTree()
     for _ in range(n):
         cmd = input().split()
         if cmd[0] == 'insert':
