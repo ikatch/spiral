@@ -17,50 +17,40 @@ class Node:
         self.node_type = node_type
 
 
-def preorder(node_id: int = -1) -> None:
+def pre_order(node_id: int = -1, order=None) -> None:
+    if order is None:
+        order = []
     if node_id == -1:
-        return None
+        return order
     else:
-        print(' {}'.format(node_id), end='')
-        preorder(node_id=nodes[node_id].left_child_id)
-        preorder(node_id=nodes[node_id].right_child_id)
-    return None
+        order.append(node_id)
+        pre_order(node_id=nodes[node_id].left_child_id, order=order)
+        pre_order(node_id=nodes[node_id].right_child_id, order=order)
+    return order
 
 
-def inorder(node_id: int = -1) -> None:
+def in_order(node_id: int = -1, order=None) -> None:
+    if order is None:
+        order = []
     if node_id == -1:
-        return None
+        return order
     else:
-        inorder(node_id=nodes[node_id].left_child_id)
-        print(' {}'.format(node_id), end='')
-        inorder(node_id=nodes[node_id].right_child_id)
-    return None
+        in_order(node_id=nodes[node_id].left_child_id, order=order)
+        order.append(node_id)
+        in_order(node_id=nodes[node_id].right_child_id, order=order)
+    return order
 
 
-def postorder(node_id: int = -1) -> None:
+def post_order(node_id: int = -1, order=None) -> None:
+    if order is None:
+        order = []
     if node_id == -1:
-        return None
+        return order
     else:
-        postorder(node_id=nodes[node_id].left_child_id)
-        postorder(node_id=nodes[node_id].right_child_id)
-        print(' {}'.format(node_id), end='')
-    return None
-
-
-def parse(node_id: int = -1, order: str = None) -> None:
-    if node_id == -1:
-        return None
-    else:
-        if order == 'preorder':
-            preorder(node_id=node_id)
-        elif order == 'inorder':
-            inorder(node_id=node_id)
-        elif order == 'postorder':
-            postorder(node_id=node_id)
-        else:
-            return None
-        print()
-    return None
+        post_order(node_id=nodes[node_id].left_child_id, order=order)
+        post_order(node_id=nodes[node_id].right_child_id, order=order)
+        order.append(node_id)
+    return order
 
 
 def main() -> None:
@@ -94,11 +84,14 @@ def main() -> None:
     for node in nodes:
         if node.parent_id == -1:  # i.e. root
             print('Preorder')
-            parse(node_id=node.node_id, order='preorder')
+            print(' ', end='')
+            print(*pre_order(node_id=node.node_id))
             print('Inorder')
-            parse(node_id=node.node_id, order='inorder')
+            print(' ', end='')
+            print(*in_order(node_id=node.node_id))
             print('Postorder')
-            parse(node_id=node.node_id, order='postorder')
+            print(' ', end='')
+            print(*post_order(node_id=node.node_id))
             break
         else:
             pass
