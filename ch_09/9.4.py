@@ -1,5 +1,5 @@
-# ALDS1_8_B: Binary Search Tree II
-# https://onlinejudge.u-aizu.ac.jp/problems/ALDS1_8_B
+# ALDS1_8_C: Binary Search Tree III
+# https://onlinejudge.u-aizu.ac.jp/problems/ALDS1_8_C
 
 
 class Node:
@@ -95,7 +95,7 @@ class BinarySearchTree(BinaryTree):
             raise Exception('target does not exist')
         return None
 
-    def find(self, key: int, target: Node = None) -> bool:
+    def find(self, key: int, target: Node = None) -> Node:
         if target is None:
             target = self.root  # default value: root
         else:
@@ -103,14 +103,62 @@ class BinarySearchTree(BinaryTree):
         if target in self.nodes:
             while target is not None:  # find node whose key is key
                 if target.key == key:
-                    return True
+                    return target
                 elif key < target.key:
                     target = target.left
                 else:
                     target = target.right
-            return False
+            return None
         else:
             raise Exception('target does not exist')
+
+    def get_min(self, target: Node = None) -> Node:
+        while target.left is not None:
+            target = target.left
+        return target
+
+    def get_successor(self, target: Node = None) -> Node:
+        if target.right is not None:
+            return self.get_min(target=target.right)
+        else:
+            parent = target.parent
+            while parent is not None and target is parent.right:  # find the node who is the parent's left child
+                target = parent
+                parent = parent.parent
+            return parent
+
+    def delete(self, key: int, target: Node = None) -> None:
+        target = self.find(key=key, target=target)
+        # select node to remove (target itself or targets successor)
+        if target.left is None or target.right is None:  # case 1: no child / case 2: one child
+            node_remove = target
+        else:  # two children
+            node_remove = self.get_successor(target=target)  # case 3: two children
+        # find child of node to remove
+        if node_remove.left is not None:  # case 1: child is None
+            child = node_remove.left      # case 2: child is target's left / right of target
+        else:                             # case 3: child is successor's right (successor does not have left)
+            child = node_remove.right
+        # update parent of child
+        if child is None:  # i.e. case 1
+            pass
+        else:  # i.e. case 2 / 3
+            child.parent = node_remove.parent
+        # update child of parent (current child of parent is node to remove)
+        if node_remove.parent is None:  # i.e. node_remove is root
+            self.root = child
+        elif node_remove == node_remove.parent.left:  # check which child of parent is node to remove
+            node_remove.parent.left = child
+        else:
+            node_remove.parent.right = child
+        # case 3: update key of target with one of node to remove
+        if node_remove == target:  # i.e. case 1 / 2
+            pass
+        else:  # i.e. case 3
+            target.key = node_remove.key
+        # remove from tree
+        self.nodes.remove(node_remove)
+        return None
 
 
 def main() -> None:
@@ -123,10 +171,13 @@ def main() -> None:
             tree.insert(key=key)
         elif cmd[0] == 'find':
             key = int(cmd[1])
-            if tree.find(key=key):
+            if tree.find(key=key) is not None:
                 print('yes')
             else:
                 print('no')
+        elif cmd[0] == 'delete':
+            key = int(cmd[1])
+            tree.delete(key=key)
         elif cmd[0] == 'print':
             print(' ', end='')
             print(*tree.in_order(target=tree.root))

@@ -10,46 +10,12 @@ class Node:
         self.right = right
 
 
-class BinarySearchTree:
+class BinaryTree:
     nodes = []
     root = None
 
     def __init__(self) -> None:
         pass
-
-    def insert(self, key: int, target: Node = None) -> None:
-        if target is None:
-            if self.nodes.__len__() == 0:  # i.e. root
-                node = Node(key=key)
-                self.nodes.append(node)
-                self.root = node
-                return None
-            else:
-                target = self.root  # default value: root
-        else:
-            pass
-        if target in self.nodes:
-            while target is not None:  # find node where to insert
-                if key < target.key:
-                    if target.left is not None:
-                        target = target.left
-                    else:
-                        break
-                else:
-                    if target.right is not None:
-                        target = target.right
-                    else:
-                        break
-            node = Node(key=key, parent=target)
-            self.nodes.append(node)
-
-            if key < target.key:
-                target.left = node
-            else:
-                target.right = node
-        else:
-            raise Exception('target does not exist')
-        return None
 
     def pre_order(self, target: Node, order=None) -> None:
         if order is None:
@@ -89,6 +55,45 @@ class BinarySearchTree:
             self.post_order(target=target.right, order=order)
             order.append(target.key)
         return order
+
+
+class BinarySearchTree(BinaryTree):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def insert(self, key: int, target: Node = None) -> None:
+        if target is None:
+            if self.nodes.__len__() == 0:  # i.e. root
+                node = Node(key=key)
+                self.nodes.append(node)
+                self.root = node
+                return None
+            else:
+                target = self.root  # default value: root
+        else:
+            pass
+        if target in self.nodes:
+            while target is not None:  # find node where to insert
+                if key < target.key:
+                    if target.left is not None:
+                        target = target.left
+                    else:
+                        break
+                else:
+                    if target.right is not None:
+                        target = target.right
+                    else:
+                        break
+            node = Node(key=key, parent=target)
+            self.nodes.append(node)
+
+            if key < target.key:
+                target.left = node
+            else:
+                target.right = node
+        else:
+            raise Exception('target does not exist')
+        return None
 
 
 def main() -> None:
