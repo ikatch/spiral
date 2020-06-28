@@ -37,7 +37,6 @@ def lcs(X: str, Y: str) -> int:
 def main() -> None:
     n = int(input())
 
-    for _ in range(n):
         s1 = input()
         s2 = input()
 
